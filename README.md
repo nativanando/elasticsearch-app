@@ -1,6 +1,6 @@
 # FileSystem index for Elasticsearch
 
-Specification of an infrastructures to the [Elasticsearch](https://elastic.co/) with [FS Crawler] (https://github.com/dadoonet/fscrawler)
+Specification of an infrastructures to the [Elasticsearch](https://elastic.co/) with FS Crawler
 
 | Elasticsearch |  FS Crawler |
 |---------------|-------------|

@@ -12,8 +12,7 @@ $( "#calendario" ).on( "click", function() {
 
 $("#formulario").submit(function(e) {
 
-	var valor = $("#query").val();
-	obtemTamanhoIndice($("#indicesId").val(), valor);
+	obtemTamanhoIndice($("#indicesId").val(), $("#query").val());
 });
 
 function criaConexaoElastic(){
@@ -150,8 +149,9 @@ function formataPosts(resultado, frase){
   				} 
   			}
   		}
-  	}); 
-}
+  	});
+  	} 
+
 
 function formataPalavrasChaves(frase){
 

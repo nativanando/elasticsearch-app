@@ -14,14 +14,27 @@
     <div class="col-sm-2 sidenav">
       <ul class="nav nav-pills nav-stacked"></ul><br>
       <form id="formulario" onsubmit="return false;">
+      <label>Diretório</label>
         <select class="form-control cursor" id="indicesId">
         <option>Todos</option>
+        </select><br>
+        <label>Tipo de busca</label>
+        <select class="form-control cursor" id="padraoPesquisa">
+        <option>Palavras-chave</option>
+        <option>Frase</option>
+        <option>Citação</option>
         </select>
         <br>
         <input type="text" class="form-control" id="extensao" placeholder="Formato do arquivo.."><br>
         <input type="text" class="form-control" id="autor" placeholder="Autor.."><br>
         <div class="input-group date" data-provide="datepicker">
-          <input type="text" class="form-control" id="calendario" placeholder="Data.." autocomplete="off">
+          <input type="text" class="form-control" id="dataInicio" placeholder="Data início.." autocomplete="off" maxlength="10">
+            <div class="input-group-addon">
+              <span type="button" class="glyphicon glyphicon-th"> </span>
+            </div>
+        </div><br>
+        <div class="input-group date" data-provide="datepicker">
+          <input type="text" class="form-control" id="dataFinal" placeholder="Data final.." autocomplete="off" maxlength="10">
             <div class="input-group-addon">
               <span type="button" class="glyphicon glyphicon-th"> </span>
             </div>
@@ -55,6 +68,6 @@
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
-<script src="js/elastic-conexao.js"></script>
-
-
+<script src="bower_components/jquery-mask-plugin/dist/jquery.mask.min.js"></script>
+<script src="js/elastic-config.js"></script>
+<script src="js/searching-view.js"></script>

@@ -1,115 +1,34 @@
 
 $(document).ready(function() {
 
-      criaConexaoElastic();
+      iniciaIndices();
+      mascaraDatas();
 
 });
 
-$( "#calendario" ).on( "click", function() {
-  $( "#calendario" ).datepicker({});
+function mascaraDatas(){
 
-});
+  $("#dataInicio").mask('00/00/0000');
+  $("#dataFinal").mask('00/00/0000');
+
+}
+
 
 $("#formulario").submit(function(e) {
 
-	obtemTamanhoIndice($("#indicesId").val(), $("#query").val());
+	iniciaQuery($("#padraoPesquisa").val(), $("#indicesId").val(), $("#query").val());
+
+
 });
 
-function criaConexaoElastic(){
-
-	 $.ajax({
-     	url: "http://localhost:9200/_cat/indices?format=json&pretty",
-        type: "GET",
-        success: function(data) {
-            for (var i = 0; i < data.length; i++){
-            	if (data[i].index != '.kibana'){
-            		$('#indicesId').append("<option class='cursor'> "+data[i].index+" </option>");
-
-            	}
-            }
-        },
-    });  
-}
-
-function obtemTamanhoIndice(indice, frase){
-
-	var urlHTTP = construirUrl(indice);
-	 
-	jQuery.post(urlHTTP, JSON.stringify({
-		"query": {
-       		"match_all": {
-       		}
-       	}
-
-	}), function (data) {
-
-		buscaPorFrase (indice, data.hits.total, frase);
-
-	}, 'json')
-
-	.fail(function() {
-    	alert( "Erro na requisição de indice" );
-
-  	}); 
-}
-
-function buscaPorFrase(indice, tamanho, frase){
-
-	var urlHTTP = construirUrlDeBusca(indice, tamanho);
-	console.log(frase);
-
-	jQuery.post(urlHTTP, JSON.stringify({
-  		"query": {
-    		"query_string": {
-     			"default_field": "content",
-      			"query": frase
-      		}
-      	}
-
-	}), function (data) {
-
-    	$('#posts').empty();
-		formataPosts(data, frase);
-
-	}, 'json')
-
-	.fail(function() {
-    	alert( "Erro na requisição de busca" );
-
-  	}); 
-}
-
-function construirUrl(indice){
-
-	var requisicaoURL;
-	requisicaoURL = 'http://localhost:9200/'+indice+'/_search?pretty';
-
-	if (indice == "Todos"){
-		requisicaoURL = 'http://localhost:9200/_search?pretty';
-	}
-
-	return requisicaoURL;
-}
-
-function construirUrlDeBusca(indice, tamanho){
-
-	var requisicaoURL;
-	requisicaoURL = 'http://localhost:9200/'+indice+'/_search?size='+tamanho+'&pretty';
-
-	if (indice == "Todos"){
-		requisicaoURL = 'http://localhost:9200/_search?size='+tamanho+'&pretty';
-	}
-
-	return requisicaoURL;
-
-}
 
 function formataPosts(resultado, frase){
 
 	$("#content").scrollTop();
 	var controlePaginacao = divisaoScroll(resultado);
 	var palavrasChave = formataPalavrasChaves(frase);
-	var indiceScroll = controlePaginacao;	
+	var indiceScroll = controlePaginacao;
+	console.log(resultado);	
 
 	if (resultado.hits.hits.length == 0){
      	$("#posts").append("<h4><center><b>Nehum resultado encontrado</b></center></h4>");  
@@ -153,24 +72,6 @@ function formataPosts(resultado, frase){
   	} 
 
 
-function formataPalavrasChaves(frase){
-
-	for (var i = 0; i < frase.length; i++){
-		frase = frase.replace("AND","");
-		frase = frase.replace("OR","");
-		frase = frase.replace("  ", " ");
-
-	}
-
-	return frase;
-}
-
-function formataURL(url){
-
-	return encodeURI(url);
-
-}
-
 function divisaoScroll(resultado){
 
 	var valorDivisaoPagina;
@@ -187,17 +88,6 @@ function divisaoScroll(resultado){
 	}  
 }
 
-function destacaPalavras(texto, palavrasChave){
-
-	palavrasChave = palavrasChave.split(" ");
-
-	for (var i = 0; i < palavrasChave.length; i++){
-		texto = texto.toLowerCase().replace(palavrasChave[i].toLowerCase(),"<b>"+palavrasChave[i]+"</b>");
-
-	}
-
-	return texto;
-}
 
 function formataData(data) {
 

@@ -11,6 +11,11 @@ function iniciaIndices(){
             	}
             }
         },
+        error: function (jqXHR, exception) {
+
+        	alert("Não foi possível conectar ao Elasticsearch");
+        }
+
     });  
 }
 
@@ -70,9 +75,9 @@ function formataPalavrasChaves(frase){
 	return frase;
 }
 
-function iniciaQuery(tipoPesquisa, indice, frase){
+function iniciaQuery(pesquisa){
 
-	var urlHTTP = construirUrl(indice);
+	var urlHTTP = construirUrl(pesquisa.diretorio);
 	 
 	jQuery.post(urlHTTP, JSON.stringify({
 		"query": {
@@ -82,7 +87,7 @@ function iniciaQuery(tipoPesquisa, indice, frase){
 
 	}), function (data) {
 
-		verificaTipoDePesquisa(indice, data.hits.total, frase, tipoPesquisa);
+		executaBusca(pesquisa, data.hits.total);
 		
 
 	}, 'json')
@@ -95,28 +100,17 @@ function iniciaQuery(tipoPesquisa, indice, frase){
 
 
 
-function buscaSemFiltros(indice, tamanho, frase, tipoPesquisa){
+function executaBusca(pesquisa, tamanho){
 
-	var urlHTTP = construirUrlDeBusca(indice, tamanho);
-	var filtro = {"match": { "content": { "query": frase } } }
-
-	if (tipoPesquisa == "Citação"){
-
-		filtro = {"match_phrase": { "content": { "query": frase } } }
-	}
-
-	if (tipoPesquisa == "Palavras-chave"){
-
-		filtro = {"query_string": { "default_field": "content", "query": frase } } 
-	}
-
+	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, tamanho);
+	var query = formataQuery(pesquisa);
 
 	jQuery.post(urlHTTP, JSON.stringify({
-  		"query": filtro
+  		"query": query
 	}), function (data) {
 
     	$('#posts').empty();
-		formataPosts(data, frase);
+		formataPosts(data, pesquisa.frase);
 		console.log("array", data.hits.hits.length);
 
 	}, 'json')
@@ -127,9 +121,69 @@ function buscaSemFiltros(indice, tamanho, frase, tipoPesquisa){
   	}); 
 }
 
-function verificaTipoDePesquisa(indice, tamanho, frase, tipoPesquisa){
 
-		buscaSemFiltros(indice, tamanho,frase, tipoPesquisa);
+function formataQuery(pesquisa){
+
+	var query = {"bool": { "must": [ { "match": { "content": pesquisa.frase } } ] } };
+
+	if (pesquisa.tipoPesquisa == "Citação"){
+		query = {"bool": { "must": [ { "match_phrase": { "content": pesquisa.frase } } ] } };
+	}
+
+	if (pesquisa.tipoPesquisa == "Palavras-chave"){
+		query = { "bool": { "must": [ { "query_string": { "default_field": "content", "query": pesquisa.frase } } ] } };
+	}
+
+	adicionaFiltros(pesquisa, query);
+
+	return query;
+
+}
+
+function adicionaFiltros(pesquisa, query) {
+
+	var filtroData = {"filter": [  ] };
+    Object.assign(query.bool, filtroData);
+
+
+    if (pesquisa.dataInicial != "" && pesquisa.dataFinal != ""){
+    	 filtroData = { 
+                "range": {
+                    "file.last_modified": {
+                        "gt": pesquisa.dataInicial,
+                        "lte": pesquisa.dataFinal,
+                        "format": "dd/MM/yyyy||yyyy"
+                    }
+                }
+        }
+
+		query.bool.filter.push(filtroData);
+
+    }
+
+    if (pesquisa.formato != "" ) {
+    	 filtroData = {
+                  "term": {
+            		"file.extension": pesquisa.formato.toLowerCase()              	
+              }
+        }
+
+        query.bool.filter.push(filtroData);
+    }
+
+    if (pesquisa.autor != "" ) {
+    	 filtroData = {
+                  "term": {
+            		"meta.author": pesquisa.autor.toLowerCase()              	
+              }
+        }
+
+        query.bool.filter.push(filtroData);
+    }
+
+    console.log(query);
+
+  return query;
 
 }
 

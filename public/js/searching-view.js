@@ -6,9 +6,10 @@ $(document).ready(function() {
 
 });
 
+
 function mascaraDatas(){
 
-  $("#dataInicio").mask('00/00/0000');
+  $("#dataInicial").mask('00/00/0000');
   $("#dataFinal").mask('00/00/0000');
 
 }
@@ -16,8 +17,9 @@ function mascaraDatas(){
 
 $("#formulario").submit(function(e) {
 
-	iniciaQuery($("#padraoPesquisa").val(), $("#indicesId").val(), $("#query").val());
-
+	var pesquisa = new Pesquisa();
+	pesquisa.setPesquisa(pesquisa);
+	iniciaQuery(pesquisa);
 
 });
 
@@ -25,6 +27,7 @@ $("#formulario").submit(function(e) {
 function formataPosts(resultado, frase){
 
 	$("#content").scrollTop();
+    $('#posts').empty();
 	var controlePaginacao = divisaoScroll(resultado);
 	var palavrasChave = formataPalavrasChaves(frase);
 	var indiceScroll = controlePaginacao;
@@ -69,13 +72,12 @@ function formataPosts(resultado, frase){
   			}
   		}
   	});
-  	} 
+} 
 
 
 function divisaoScroll(resultado){
 
 	var valorDivisaoPagina;
-
 
 	if (resultado.hits.hits.length <= 100000){
 		valorDivisaoPagina = 50;

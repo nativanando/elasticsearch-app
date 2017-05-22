@@ -35,10 +35,10 @@ function construirUrl(indice){
 function construirUrlDeBusca(indice, tamanho){
 
 	var requisicaoURL;
-	requisicaoURL = 'http://localhost:9200/'+indice+'/_search?size='+tamanho+'&pretty';
+	requisicaoURL = 'http://localhost:9200/'+indice+'/_search?size=10000&pretty';
 
 	if (indice == "Todos"){
-		requisicaoURL = 'http://localhost:9200/_search?size='+tamanho+'&pretty';
+		requisicaoURL = 'http://localhost:9200/_search?size=10000&pretty';
 	}
 
 	return requisicaoURL;
@@ -173,8 +173,8 @@ function adicionaFiltros(pesquisa, query) {
 
     if (pesquisa.autor != "" ) {
     	 filtroData = {
-                  "term": {
-            		"meta.author": pesquisa.autor.toLowerCase()              	
+                  "regexp": {
+            		"meta.author": ".*"+pesquisa.autor.toLowerCase()+".*"             	
               }
         }
 

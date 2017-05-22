@@ -12,6 +12,14 @@ function mascaraDatas(){
   $("#dataInicial").mask('00/00/0000');
   $("#dataFinal").mask('00/00/0000');
 
+  $('#dataInicial').datepicker({
+      dateFormat: 'dd/mm/yy'
+	});
+
+  $('#dataFinal').datepicker({
+      dateFormat: 'dd/mm/yy'
+	});
+
 }
 
 

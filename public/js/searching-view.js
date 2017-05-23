@@ -38,7 +38,7 @@ function formataPosts(resultado, frase){
     $('#posts').empty();
 	var controlePaginacao = divisaoScroll(resultado);
 	var palavrasChave = formataPalavrasChaves(frase);
-	var indiceScroll = controlePaginacao;
+	var indiceScroll = 0;
 	console.log(resultado);	
 
 	if (resultado.hits.hits.length == 0){
@@ -64,8 +64,9 @@ function formataPosts(resultado, frase){
 		  if (indiceScroll < resultado.hits.hits.length){
           	if ($(this).scrollTop() + $(this).height() == $(this).get(0).scrollHeight) {
             	console.log("fim");
+            	indiceScroll = indiceScroll + controlePaginacao;
             	for (var i  = indiceScroll; i < (indiceScroll + controlePaginacao); i++){
-            		if (indiceScroll < resultado.hits.hits.length){
+            		if (i < resultado.hits.hits.length){
             			resultado.hits.hits[i]._source.file.last_modified = formataData(resultado.hits.hits[i]._source.file.last_modified);
          				resultado.hits.hits[i]._source.file.url = formataURL(resultado.hits.hits[i]._source.file.url);
      					resultado.hits.hits[i]._source.content = destacaPalavras(resultado.hits.hits[i]._source.content, palavrasChave);
@@ -74,7 +75,6 @@ function formataPosts(resultado, frase){
   						<h5><span class='glyphicon glyphicon-time'></span> "+resultado.hits.hits[i]._source.file.last_modified +"</h5>\
   						<h5 align='justify'>"+resultado.hits.hits[i]._source.content+"</h5>\
   						<h5><span class='label label-primary'>"+palavrasChave+"</span></h5><hr>");
-  						indiceScroll++;
   					}
   				} 
   			}
@@ -88,7 +88,7 @@ function divisaoScroll(resultado){
 	var valorDivisaoPagina;
 
 	if (resultado.hits.hits.length <= 100000){
-		valorDivisaoPagina = 50;
+		valorDivisaoPagina = 10;
 		return valorDivisaoPagina;
 	}
 	

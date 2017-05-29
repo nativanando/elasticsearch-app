@@ -39,14 +39,14 @@ function formataPosts(resultado, frase){
 	var controlePaginacao = divisaoScroll(resultado);
 	var palavrasChave = formataPalavrasChaves(frase);
 	var indiceScroll = 0;
-	console.log(resultado);	
+	console.log(resultado);
 
 	if (resultado.hits.hits.length == 0){
-     	$("#posts").append("<h4><center><b>Nehum resultado encontrado</b></center></h4>");  
+     	$("#posts").append("<h4><center><b>Nehum resultado encontrado</b></center></h4>");
 
   		return 0;
-	}	
-	
+	}
+
 	for (var i = 0; i < controlePaginacao; i++){
 		if (i < resultado.hits.hits.length){
 			resultado.hits.hits[i]._source.file.last_modified = formataData(resultado.hits.hits[i]._source.file.last_modified);
@@ -60,7 +60,7 @@ function formataPosts(resultado, frase){
      	}
      }
 
-	$("#content").scroll(function() { 
+	$("#content").scroll(function() {
 		  if (indiceScroll < resultado.hits.hits.length){
           	if ($(this).scrollTop() + $(this).height() == $(this).get(0).scrollHeight) {
             	console.log("fim");
@@ -68,19 +68,19 @@ function formataPosts(resultado, frase){
             	for (var i  = indiceScroll; i < (indiceScroll + controlePaginacao); i++){
             		if (i < resultado.hits.hits.length){
             			resultado.hits.hits[i]._source.file.last_modified = formataData(resultado.hits.hits[i]._source.file.last_modified);
-         				resultado.hits.hits[i]._source.file.url = formataURL(resultado.hits.hits[i]._source.file.url);
-     					resultado.hits.hits[i]._source.content = destacaPalavras(resultado.hits.hits[i]._source.content, palavrasChave);
-     					$("#posts").append("\
-     					<a href="+resultado.hits.hits[i]._source.file.url+" target='_blank'> <h4 class='color-link'>"+resultado.hits.hits[i]._source.file.filename+"</h4> </a>\
-  						<h5><span class='glyphicon glyphicon-time'></span> "+resultado.hits.hits[i]._source.file.last_modified +"</h5>\
-  						<h5 align='justify'>"+resultado.hits.hits[i]._source.content+"</h5>\
-  						<h5><span class='label label-primary'>"+palavrasChave+"</span></h5><hr>");
+         				  resultado.hits.hits[i]._source.file.url = formataURL(resultado.hits.hits[i]._source.file.url);
+     					    resultado.hits.hits[i]._source.content = destacaPalavras(resultado.hits.hits[i]._source.content, palavrasChave);
+     					    $("#posts").append("\
+     					    <a href="+resultado.hits.hits[i]._source.file.url+" target='_blank'> <h4 class='color-link'>"+resultado.hits.hits[i]._source.file.filename+"</h4> </a>\
+  						    <h5><span class='glyphicon glyphicon-time'></span> "+resultado.hits.hits[i]._source.file.last_modified +"</h5>\
+  						    <h5 align='justify'>"+resultado.hits.hits[i]._source.content+"</h5>\
+  						    <h5><span class='label label-primary'>"+palavrasChave+"</span></h5><hr>");
   					}
-  				} 
+  				}
   			}
   		}
   	});
-} 
+}
 
 
 function divisaoScroll(resultado){
@@ -91,11 +91,11 @@ function divisaoScroll(resultado){
 		valorDivisaoPagina = 10;
 		return valorDivisaoPagina;
 	}
-	
+
 	if (resultado.hits.hits.length <= 10){
 		valorDivisaoPagina = resultado.hits.hits.length;
 		return valorDivisaoPagina;
-	}  
+	}
 }
 
 

@@ -185,7 +185,6 @@ function executaBuscaPaginada(paginacao, query, pesquisa){ //executa a busca de 
   		"query": query
 	}), function (data) {
 
-    	//$('#posts').empty();
 		paginacaoResultados(data, pesquisa, query);
 
 	}, 'json')

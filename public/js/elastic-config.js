@@ -1,7 +1,9 @@
 function iniciaIndices(){
+	
+	var conexao = new Conexao();
 
 	 $.ajax({
-     	url: "http://localhost:9200/_cat/indices?format=json&pretty",
+     	url: ""+conexao.getStringConexao()+"/_cat/indices?format=json&pretty",
         type: "GET",
         success: function(data) {
             for (var i = 0; i < data.length; i++){
@@ -19,26 +21,26 @@ function iniciaIndices(){
     });  
 }
 
-function construirUrl(indice){
+function construirUrl(indice, stringConexao){
 
 	var requisicaoURL;
-	requisicaoURL = 'http://localhost:9200/'+indice+'/_search?pretty';
+	requisicaoURL = ""+stringConexao+"/"+indice+"/_search?pretty";
 
 	if (indice == "Todos"){
-		requisicaoURL = 'http://localhost:9200/_search?pretty';
+		requisicaoURL = ""+stringConexao+"/_search?pretty";
 	}
 
 	return requisicaoURL;
 }
 
 
-function construirUrlDeBusca(indice, tamanho){
+function construirUrlDeBusca(indice, tamanho, stringConexao){
 
 	var requisicaoURL;
-	requisicaoURL = 'http://localhost:9200/'+indice+'/_search?size=10000&pretty';
+	requisicaoURL = ""+stringConexao+"/"+indice+"/_search?size=10000&pretty";
 
 	if (indice == "Todos"){
-		requisicaoURL = 'http://localhost:9200/_search?size=10000&pretty';
+		requisicaoURL = ""+stringConexao+"/_search?size=10000&pretty";
 	}
 
 	return requisicaoURL;
@@ -77,7 +79,9 @@ function formataPalavrasChaves(frase){
 
 function iniciaQuery(pesquisa){
 
-	var urlHTTP = construirUrl(pesquisa.diretorio);
+	var conexao = new Conexao();
+
+	var urlHTTP = construirUrl(pesquisa.diretorio, conexao.getStringConexao());
 	 
 	jQuery.post(urlHTTP, JSON.stringify({
 		"query": {
@@ -87,7 +91,7 @@ function iniciaQuery(pesquisa){
 
 	}), function (data) {
 
-		executaBusca(pesquisa, data.hits.total);
+		executaBusca(pesquisa, data.hits.total, conexao.getStringConexao());
 		
 
 	}, 'json')
@@ -100,9 +104,9 @@ function iniciaQuery(pesquisa){
 
 
 
-function executaBusca(pesquisa, tamanho){
+function executaBusca(pesquisa, tamanho, stringConexao){
 
-	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, tamanho);
+	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, tamanho, stringConexao);
 	var query = formataQuery(pesquisa);
 
 	jQuery.post(urlHTTP, JSON.stringify({
@@ -142,12 +146,11 @@ function formataQuery(pesquisa){
 
 function adicionaFiltros(pesquisa, query) {
 
-	var filtroData = {"filter": [  ] };
-    Object.assign(query.bool, filtroData);
-
+	var filtro = {"filter": [  ] };
+    Object.assign(query.bool, filtro);
 
     if (pesquisa.dataInicial != "" && pesquisa.dataFinal != ""){
-    	 filtroData = { 
+    	 filtro = { 
                 "range": {
                     "file.last_modified": {
                         "gt": pesquisa.dataInicial,
@@ -157,28 +160,38 @@ function adicionaFiltros(pesquisa, query) {
                 }
         }
 
-		query.bool.filter.push(filtroData);
+		query.bool.filter.push(filtro);
 
     }
 
     if (pesquisa.formato != "" ) {
-    	 filtroData = {
+    	 filtro = {
                   "term": {
             		"file.extension": pesquisa.formato.toLowerCase()              	
               }
         }
 
-        query.bool.filter.push(filtroData);
+        query.bool.filter.push(filtro);
     }
 
     if (pesquisa.autor != "" ) {
-    	 filtroData = {
+    	 filtro = {
                   "regexp": {
             		"meta.author": ".*"+pesquisa.autor.toLowerCase()+".*"             	
               }
         }
 
-        query.bool.filter.push(filtroData);
+        query.bool.filter.push(filtro);
+    }
+
+    if (pesquisa.subdiretorio != ''){
+    	filtro = {
+                  "regexp": {
+            		"path.virtual": "/"+pesquisa.subdiretorio+".*"             	
+              }
+        }
+
+        query.bool.filter.push(filtro);
     }
 
     console.log(query);

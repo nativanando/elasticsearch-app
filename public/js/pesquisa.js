@@ -1,4 +1,4 @@
-var Pesquisa = function(frase, diretorio, tipoPesquisa, formato, dataInicial, dataFinal, autor){
+var Pesquisa = function(frase, diretorio, tipoPesquisa, formato, dataInicial, dataFinal, autor, subdiretorio){
 	return {
 		frase  : frase,
 		diretorio : diretorio,
@@ -7,6 +7,7 @@ var Pesquisa = function(frase, diretorio, tipoPesquisa, formato, dataInicial, da
 		dataInicial : dataInicial,
 		dataFinal : dataFinal,
 		autor: autor,
+		subdiretorio: subdiretorio,
 
 		setPesquisa: function(objeto){
 				objeto.frase = $("#query").val();
@@ -16,6 +17,7 @@ var Pesquisa = function(frase, diretorio, tipoPesquisa, formato, dataInicial, da
 				objeto.formato = $("#formato").val();
 				objeto.dataInicial = $("#dataInicial").val();
 				objeto.dataFinal = $("#dataFinal").val();
+				objeto.subdiretorio = $("#subdiretorio").val();
 
 				return objeto;
 			}

@@ -94,7 +94,6 @@ function executaBusca(pesquisa, paginacao, stringConexao){ //executa a busca ini
   		"query": query
 	}), function (data) {
 
-    	//$('#posts').empty();
 		formataPosts(data, pesquisa, query);
 
 	}, 'json')

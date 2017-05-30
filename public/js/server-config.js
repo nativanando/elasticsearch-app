@@ -1,5 +1,5 @@
 var Conexao = function(){
-
+	
 	return {
 
 		stringConexao  : "http://localhost:9200",

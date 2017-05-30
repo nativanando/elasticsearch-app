@@ -1,3 +1,4 @@
+//objeto do tipo pesquisa, para facilitar a construção da query
 var Pesquisa = function(frase, diretorio, tipoPesquisa, formato, dataInicial, dataFinal, autor, subdiretorio){
 	return {
 		frase  : frase,

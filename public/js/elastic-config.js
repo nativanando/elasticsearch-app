@@ -1,8 +1,7 @@
-function iniciaIndices(){
+function iniciaIndices(){ //busca os índices que estão indexados de forma dinâmica e joga seu resultado no select box.
 	
 	var conexao = new Conexao();
-
-	 $.ajax({
+	$.ajax({
      	url: ""+conexao.getStringConexao()+"/_cat/indices?format=json&pretty",
         type: "GET",
         success: function(data) {
@@ -17,11 +16,18 @@ function iniciaIndices(){
 
         	alert("Não foi possível conectar ao Elasticsearch");
         }
-
     });  
 }
 
-function construirUrl(indice, stringConexao){
+function iniciaQuery(pesquisa, paginacao){ //método que inicia a query, montando a URL http e chamando a execução da busca
+
+	var conexao = new Conexao();
+	var urlHTTP = construirUrl(pesquisa.diretorio, conexao.getStringConexao());
+	executaBusca(pesquisa, paginacao, conexao.getStringConexao());
+	
+}
+
+function construirUrl(indice, stringConexao){ //monta a URL conforme o índice especificado.
 
 	var requisicaoURL;
 	requisicaoURL = ""+stringConexao+"/"+indice+"/_search?pretty";
@@ -34,16 +40,17 @@ function construirUrl(indice, stringConexao){
 }
 
 
-function construirUrlDeBusca(indice, tamanho, stringConexao){
+function construirUrlDeBusca(indice, paginacao, stringConexao){
+	//constroí a url de busca, neste método é passado o controle de paginação que está sendo executado, de 10 em 10.
 
 	var requisicaoURL;
-	requisicaoURL = ""+stringConexao+"/"+indice+"/_search?size=10000&pretty";
+	requisicaoURL = ""+stringConexao+"/"+indice+"/_search?size=10&from="+paginacao+"";
 
 	if (indice == "Todos"){
-		requisicaoURL = ""+stringConexao+"/_search?size=10000&pretty";
+		requisicaoURL = ""+stringConexao+"/_search?size=10&from="+paginacao+"";
 	}
 
-	return requisicaoURL;
+	return requisicaoURL; //retorna a URL formata com os resultados que deve trazer
 
 }
 
@@ -66,6 +73,7 @@ function destacaPalavras(texto, palavrasChave){
 }
 
 function formataPalavrasChaves(frase){
+ //apenas tira os operadores lógicos quando a busca for booleana, para destacar apenas os termos pesquisados
 
 	for (var i = 0; i < frase.length; i++){
 		frase = frase.replace("AND","");
@@ -77,45 +85,17 @@ function formataPalavrasChaves(frase){
 	return frase;
 }
 
-function iniciaQuery(pesquisa){
+function executaBusca(pesquisa, paginacao, stringConexao){ //executa a busca inicial, ou seja, os primeiros 10 resultados
 
-	var conexao = new Conexao();
-
-	var urlHTTP = construirUrl(pesquisa.diretorio, conexao.getStringConexao());
-	 
-	jQuery.post(urlHTTP, JSON.stringify({
-		"query": {
-       		"match_all": {
-       		}
-       	}
-
-	}), function (data) {
-
-		executaBusca(pesquisa, data.hits.total, conexao.getStringConexao());
-		
-
-	}, 'json')
-
-	.fail(function() {
-    	alert( "Erro na requisição de indice" );
-
-  	}); 
-}
-
-
-
-function executaBusca(pesquisa, tamanho, stringConexao){
-
-	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, tamanho, stringConexao);
+	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, paginacao, stringConexao);
 	var query = formataQuery(pesquisa);
 
 	jQuery.post(urlHTTP, JSON.stringify({
   		"query": query
 	}), function (data) {
 
-    	$('#posts').empty();
-		formataPosts(data, pesquisa.frase);
-		console.log("array", data.hits.hits.length);
+    	//$('#posts').empty();
+		formataPosts(data, pesquisa, query);
 
 	}, 'json')
 
@@ -126,7 +106,7 @@ function executaBusca(pesquisa, tamanho, stringConexao){
 }
 
 
-function formataQuery(pesquisa){
+function formataQuery(pesquisa){ //formata o tipo de busca, conforme especificado no formulário
 
 	var query = {"bool": { "must": [ { "match": { "content": pesquisa.frase } } ] } };
 
@@ -144,9 +124,9 @@ function formataQuery(pesquisa){
 
 }
 
-function adicionaFiltros(pesquisa, query) {
+function adicionaFiltros(pesquisa, query) { //Cria os filtros conforma os campos preenchidos do formulário
 
-	var filtro = {"filter": [  ] };
+	var filtro = {"filter": [  ] }; //monta o objeto de filtro, no formato JSON
     Object.assign(query.bool, filtro);
 
     if (pesquisa.dataInicial != "" && pesquisa.dataFinal != ""){
@@ -161,7 +141,6 @@ function adicionaFiltros(pesquisa, query) {
         }
 
 		query.bool.filter.push(filtro);
-
     }
 
     if (pesquisa.formato != "" ) {
@@ -194,10 +173,28 @@ function adicionaFiltros(pesquisa, query) {
         query.bool.filter.push(filtro);
     }
 
-    console.log(query);
+  return query; //faz o retorno dos filtros
 
-  return query;
+}
 
+function executaBuscaPaginada(paginacao, query, pesquisa){ //executa a busca de paginação, passando o próximo bloco de resultados
+
+	var conexao = new Conexao();
+	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, paginacao, conexao.getStringConexao());
+
+	jQuery.post(urlHTTP, JSON.stringify({
+  		"query": query
+	}), function (data) {
+
+    	//$('#posts').empty();
+		paginacaoResultados(data, pesquisa, query);
+
+	}, 'json')
+
+	.fail(function() {
+    	alert( "Erro na requisição de busca" );
+
+  	}); 
 }
 
 

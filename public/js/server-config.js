@@ -4,14 +4,14 @@ var Conexao = function(){
 	
 	return {
 
-		stringConexao  : "http://localhost:9200",
+		conexao  : "http://localhost:9200",
 
 		getStringConexao: function(){
-			return this.stringConexao;
+			return this.conexao;
 		},
-		
+
 		setStringConexao: function(novoServidor){
-			this.stringConexao = novoServidor;
+			this.conexao = novoServidor;
 		}
 	};
 }

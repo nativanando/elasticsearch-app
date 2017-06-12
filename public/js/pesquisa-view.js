@@ -1,5 +1,6 @@
+//Responsável por manipular os dados e renderizá-los no HTML5.
 
-$(document).ready(function() {
+$(document).ready(function(){
       //variáveis de controle para paginação
       var controleIndices = 0; //controla o indice que irá chamar os próximos requests
       var queryPaginacao; //salva a query que será paginada
@@ -26,7 +27,7 @@ function mascaraDatas(){ //configura a mascara dos inputs de data
 }
 
 
-$("#formulario").submit(function(e) {
+$("#formulario").submit(function(e){
 	var pesquisa = new Pesquisa();
   controleIndices = 0;
 	pesquisa.setPesquisa(pesquisa);
@@ -34,7 +35,7 @@ $("#formulario").submit(function(e) {
 
 });
 
-$("#content").scroll(function() { //scroll que será utilizado para ir requisitando os próximos resultados
+$("#content").scroll(function(){ //scroll que será utilizado para ir requisitando os próximos resultados
   if ($(this).scrollTop() + $(this).height() == $(this).get(0).scrollHeight) {
     controleIndices = controleIndices + 10;
     executaBuscaPaginada(controleIndices, queryPaginacao, pesquisaPaginacao) //chama o método para passando as variáveis de controle de paginação
@@ -101,11 +102,11 @@ function paginacaoResultados(resultado, pesquisa, query){ //formata os resultado
 }
 
 
-function formataData(data) {
+function formataData(data){
 
 	data = data.split("T");
 	data = data[0].split("-");
-  	var meses = ["Janeiro", "Fevereiro", "Março","Abril", "Maio", "Junho", "Julho","Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+  var meses = ["Janeiro", "Fevereiro", "Março","Abril", "Maio", "Junho", "Julho","Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
-  	return data[2] + ' de ' + meses[parseInt(data[1]) -1 ] + ' de ' + data[0];
+  return data[2] + ' de ' + meses[parseInt(data[1]) -1 ] + ' de ' + data[0];
 }

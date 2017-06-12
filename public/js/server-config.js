@@ -1,10 +1,12 @@
-var Conexao = function(){ //objeto para configurar o caminho da instância do Elasticsearch.
+//objeto para configurar o caminho da instância do Elasticsearch.
+
+var Conexao = function(){
 	
 	return {
 
 		stringConexao  : "http://localhost:9200",
 
-		getStringConexao: function(){ //método que retorna a string de conexão
+		getStringConexao: function(){
 
 			return this.stringConexao;
 		},

@@ -22,12 +22,12 @@ function iniciaIndices(){ //busca os índices que estão indexados de forma din�
 function iniciaQuery(pesquisa, paginacao){ //método que inicia a query, montando a URL http e chamando a execução da busca
 
 	var conexao = new Conexao();
-	var urlHTTP = construirUrl(pesquisa.diretorio, conexao.getStringConexao());
+	var urlHTTP = construiUrl(pesquisa.diretorio, conexao.getStringConexao());
 	executaBusca(pesquisa, paginacao, conexao.getStringConexao());
 	
 }
 
-function construirUrl(indice, stringConexao){ //monta a URL conforme o índice especificado.
+function construiUrl(indice, stringConexao){ //monta a URL conforme o índice especificado.
 
 	var requisicaoURL;
 	requisicaoURL = ""+stringConexao+"/"+indice+"/_search?pretty";
@@ -40,7 +40,7 @@ function construirUrl(indice, stringConexao){ //monta a URL conforme o índice e
 }
 
 
-function construirUrlDeBusca(indice, paginacao, stringConexao){
+function construiUrlDeBusca(indice, paginacao, stringConexao){
 	//constroí a url de busca, neste método é passado o controle de paginação que está sendo executado, de 10 em 10.
 
 	var requisicaoURL;
@@ -87,7 +87,7 @@ function formataPalavrasChaves(frase){
 
 function executaBusca(pesquisa, paginacao, stringConexao){ //executa a busca inicial, ou seja, os primeiros 10 resultados
 
-	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, paginacao, stringConexao);
+	var urlHTTP = construiUrlDeBusca(pesquisa.diretorio, paginacao, stringConexao);
 	var query = formataQuery(pesquisa);
 
 	jQuery.post(urlHTTP, JSON.stringify({
@@ -179,7 +179,7 @@ function adicionaFiltros(pesquisa, query) { //Cria os filtros conforma os campos
 function executaBuscaPaginada(paginacao, query, pesquisa){ //executa a busca de paginação, passando o próximo bloco de resultados
 
 	var conexao = new Conexao();
-	var urlHTTP = construirUrlDeBusca(pesquisa.diretorio, paginacao, conexao.getStringConexao());
+	var urlHTTP = construiUrlDeBusca(pesquisa.diretorio, paginacao, conexao.getStringConexao());
 
 	jQuery.post(urlHTTP, JSON.stringify({
   		"query": query
